@@ -225,18 +225,18 @@ class SimpleTiledModel : Model
                     bool[] w = wave[i];
                     double normalization = 1.0 / sumsOfWeights[i];
                     for (int yt = 0; yt < tilesize; yt++) for (int xt = 0; xt < tilesize; xt++)
+                    {
+                        int idi = x * tilesize + xt + (y * tilesize + yt) * MX * tilesize;
+                        double r = 0, g = 0, b = 0;
+                        for (int t = 0; t < T; t++) if (w[t])
                         {
-                            int idi = x * tilesize + xt + (y * tilesize + yt) * MX * tilesize;
-                            double r = 0, g = 0, b = 0;
-                            for (int t = 0; t < T; t++) if (w[t])
-                                {
-                                    int argb = tiles[t][xt + yt * tilesize];
-                                    r += ((argb & 0xff0000) >> 16) * weights[t] * normalization;
-                                    g += ((argb & 0xff00) >> 8) * weights[t] * normalization;
-                                    b += (argb & 0xff) * weights[t] * normalization;
-                                }
-                            bitmapData[idi] = unchecked((int)0xff000000 | ((int)r << 16) | ((int)g << 8) | (int)b);
+                            int argb = tiles[t][xt + yt * tilesize];
+                            r += ((argb & 0xff0000) >> 16) * weights[t] * normalization;
+                            g += ((argb & 0xff00) >> 8) * weights[t] * normalization;
+                            b += (argb & 0xff) * weights[t] * normalization;
                         }
+                        bitmapData[idi] = unchecked((int)0xff000000 | ((int)r << 16) | ((int)g << 8) | (int)b);
+                    }
                 }
             }
         }
