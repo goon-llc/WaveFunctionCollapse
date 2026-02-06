@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
+namespace WaveFunctionCollapse;
+
 static class Helper
 {
     public static int Random(this double[] weights, double r)

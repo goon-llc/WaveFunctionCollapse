@@ -2,6 +2,8 @@
 
 using System;
 
+namespace WaveFunctionCollapse;
+
 abstract class Model
 {
     protected bool[][] wave;

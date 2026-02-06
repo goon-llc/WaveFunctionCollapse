@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 
+namespace WaveFunctionCollapse;
+
 class OverlappingModel : Model
 {
     List<byte[]> patterns;

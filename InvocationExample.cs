@@ -4,9 +4,11 @@ using System;
 using System.Xml.Linq;
 using System.Diagnostics;
 
-static class Program
+namespace WaveFunctionCollapse;
+
+static class InvocationExample
 {
-    static void Main()
+    static void Run()
     {
         Stopwatch sw = Stopwatch.StartNew();
         var folder = System.IO.Directory.CreateDirectory("output");

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
 
+namespace WaveFunctionCollapse;
+
 class SimpleTiledModel : Model
 {
     List<int[]> tiles;
