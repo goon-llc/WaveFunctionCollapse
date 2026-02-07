@@ -10,14 +10,14 @@ namespace WaveFunctionCollapse;
 class SimpleTiledModel : Model
 {
   private readonly List<int[]> _tiles;
-  private readonly List<string> _tilenames;
+  private readonly List<string> _tileNames;
   private readonly int _tilesize;
   private readonly bool _blackBackground;
 
   public SimpleTiledModel( string name, string subsetName, int width, int height, bool periodic, bool blackBackground, Heuristic heuristic ) : base( width, height, 1, periodic,
     heuristic )
   {
-    this._blackBackground = blackBackground;
+    _blackBackground = blackBackground;
     var xDoc = XDocument.Load( $"tilesets/{name}.xml" );
     var xRoot = xDoc.Root;
 
@@ -44,21 +44,21 @@ class SimpleTiledModel : Model
     static int[] Reflect( int[] array, int size ) => Tile( ( x, y ) => array[ size - 1 - x + y * size ], size );
 
     _tiles = new List<int[]>( );
-    _tilenames = new List<string>( );
+    _tileNames = new List<string>( );
     var weightList = new List<double>( );
 
     var action = new List<int[]>( );
     var firstOccurrence = new Dictionary<string, int>( );
 
-    foreach ( XElement xtile in xRoot.Element( "tiles" ).Elements( "tile" ) )
+    foreach ( XElement xTile in xRoot.Element( "tiles" ).Elements( "tile" ) )
     {
-      string tilename = xtile.Get<string>( "name" );
-      if ( subset != null && !subset.Contains( tilename ) ) continue;
+      string tileName = xTile.Get<string>( "name" );
+      if ( subset != null && !subset.Contains( tileName ) ) continue;
 
       Func<int, int> a, b; //a is 90 degrees rotation, b is reflection
       int cardinality;
 
-      char sym = xtile.Get( "symmetry", 'X' );
+      char sym = xTile.Get( "symmetry", 'X' );
       if ( sym == 'L' )
       {
         cardinality = 4;
@@ -97,7 +97,7 @@ class SimpleTiledModel : Model
       }
 
       T = action.Count;
-      firstOccurrence.Add( tilename, T );
+      firstOccurrence.Add( tileName, T );
 
       int[][] map = new int[ cardinality ][];
       for ( int t = 0; t < cardinality; t++ )
@@ -122,26 +122,26 @@ class SimpleTiledModel : Model
       {
         for ( int t = 0; t < cardinality; t++ )
         {
-          ( var bitmap, _tilesize, _tilesize ) = BitmapHelper.LoadBitmap( $"tilesets/{name}/{tilename} {t}.png" );
+          ( var bitmap, _tilesize, _tilesize ) = BitmapHelper.LoadBitmap( $"tilesets/{name}/{tileName} {t}.png" );
           _tiles.Add( bitmap );
-          _tilenames.Add( $"{tilename} {t}" );
+          _tileNames.Add( $"{tileName} {t}" );
         }
       }
       else
       {
-        ( var bitmap, _tilesize, _tilesize ) = BitmapHelper.LoadBitmap( $"tilesets/{name}/{tilename}.png" );
+        ( var bitmap, _tilesize, _tilesize ) = BitmapHelper.LoadBitmap( $"tilesets/{name}/{tileName}.png" );
         _tiles.Add( bitmap );
-        _tilenames.Add( $"{tilename} 0" );
+        _tileNames.Add( $"{tileName} 0" );
 
         for ( int t = 1; t < cardinality; t++ )
         {
           if ( t <= 3 ) _tiles.Add( Rotate( _tiles[ T + t - 1 ], _tilesize ) );
           if ( t >= 4 ) _tiles.Add( Reflect( _tiles[ T + t - 4 ], _tilesize ) );
-          _tilenames.Add( $"{tilename} {t}" );
+          _tileNames.Add( $"{tileName} {t}" );
         }
       }
 
-      for ( int t = 0; t < cardinality; t++ ) weightList.Add( xtile.Get( "weight", 1.0 ) );
+      for ( int t = 0; t < cardinality; t++ ) weightList.Add( xTile.Get( "weight", 1.0 ) );
     }
 
     T = action.Count;
@@ -202,7 +202,7 @@ class SimpleTiledModel : Model
           sp.Add( t2 );
 
       int maxSt = sp.Count;
-      if ( maxSt == 0 ) Console.WriteLine( $"ERROR: tile {_tilenames[ t1 ]} has no neighbors in direction {d}" );
+      if ( maxSt == 0 ) Console.WriteLine( $"ERROR: tile {_tileNames[ t1 ]} has no neighbors in direction {d}" );
       propagator[ d ][ t1 ] = new int[ maxSt ];
       for ( int st = 0; st < maxSt; st++ ) propagator[ d ][ t1 ][ st ] = sp[ st ];
     }
@@ -269,7 +269,7 @@ class SimpleTiledModel : Model
     var result = new System.Text.StringBuilder( );
     for ( int y = 0; y < my; y++ )
     {
-      for ( int x = 0; x < mx; x++ ) result.Append( $"{_tilenames[ observed[ x + y * mx ] ]}, " );
+      for ( int x = 0; x < mx; x++ ) result.Append( $"{_tileNames[ observed[ x + y * mx ] ]}, " );
       result.Append( Environment.NewLine );
     }
     return result.ToString( );
