@@ -156,10 +156,10 @@ class SimpleTiledModel : Model
       for ( int t = 0; t < T; t++ ) densePropagator[ d ][ t ] = new bool[ T ];
     }
 
-    foreach ( XElement xneighbor in xRoot.Element( "neighbors" ).Elements( "neighbor" ) )
+    foreach ( XElement xNeighbor in xRoot.Element( "neighbors" ).Elements( "neighbor" ) )
     {
-      string[] left = xneighbor.Get<string>( "left" ).Split( [ ' ' ], StringSplitOptions.RemoveEmptyEntries );
-      string[] right = xneighbor.Get<string>( "right" ).Split( [ ' ' ], StringSplitOptions.RemoveEmptyEntries );
+      string[] left = xNeighbor.Get<string>( "left" ).Split( [ ' ' ], StringSplitOptions.RemoveEmptyEntries );
+      string[] right = xNeighbor.Get<string>( "right" ).Split( [ ' ' ], StringSplitOptions.RemoveEmptyEntries );
 
       if ( subset != null && ( !subset.Contains( left[ 0 ] ) || !subset.Contains( right[ 0 ] ) ) ) continue;
 
@@ -214,12 +214,14 @@ class SimpleTiledModel : Model
     if ( observed[ 0 ] >= 0 )
     {
       for ( int x = 0; x < mx; x++ )
-      for ( int y = 0; y < my; y++ )
       {
-        int[] tile = _tiles[ observed[ x + y * mx ] ];
-        for ( int dy = 0; dy < _tilesize; dy++ )
-        for ( int dx = 0; dx < _tilesize; dx++ )
-          bitmapData[ x * _tilesize + dx + ( y * _tilesize + dy ) * mx * _tilesize ] = tile[ dx + dy * _tilesize ];
+        for ( int y = 0; y < my; y++ )
+        {
+          int[] tile = _tiles[ observed[ x + y * mx ] ];
+          for ( int dy = 0; dy < _tilesize; dy++ )
+          for ( int dx = 0; dx < _tilesize; dx++ )
+            bitmapData[ x * _tilesize + dx + ( y * _tilesize + dy ) * mx * _tilesize ] = tile[ dx + dy * _tilesize ];
+        }
       }
     }
     else
@@ -229,26 +231,32 @@ class SimpleTiledModel : Model
         int x = i % mx, y = i / mx;
         if ( _blackBackground && sumsOfOnes[ i ] == T )
           for ( int yt = 0; yt < _tilesize; yt++ )
-          for ( int xt = 0; xt < _tilesize; xt++ )
-            bitmapData[ x * _tilesize + xt + ( y * _tilesize + yt ) * mx * _tilesize ] = 255 << 24;
+          {
+            for ( int xt = 0; xt < _tilesize; xt++ )
+            {
+              bitmapData[ x * _tilesize + xt + ( y * _tilesize + yt ) * mx * _tilesize ] = 255 << 24;
+            }
+          }
         else
         {
           bool[] w = wave[ i ];
           double normalization = 1.0 / sumsOfWeights[ i ];
           for ( int yt = 0; yt < _tilesize; yt++ )
-          for ( int xt = 0; xt < _tilesize; xt++ )
           {
-            int idi = x * _tilesize + xt + ( y * _tilesize + yt ) * mx * _tilesize;
-            double r = 0, g = 0, b = 0;
-            for ( int t = 0; t < T; t++ )
-              if ( w[ t ] )
-              {
-                int argb = _tiles[ t ][ xt + yt * _tilesize ];
-                r += ( ( argb & 0xff0000 ) >> 16 ) * weights[ t ] * normalization;
-                g += ( ( argb & 0xff00 ) >> 8 ) * weights[ t ] * normalization;
-                b += ( argb & 0xff ) * weights[ t ] * normalization;
-              }
-            bitmapData[ idi ] = unchecked(( int )0xff000000 | ( ( int )r << 16 ) | ( ( int )g << 8 ) | ( int )b);
+            for ( int xt = 0; xt < _tilesize; xt++ )
+            {
+              int idi = x * _tilesize + xt + ( y * _tilesize + yt ) * mx * _tilesize;
+              double r = 0, g = 0, b = 0;
+              for ( int t = 0; t < T; t++ )
+                if ( w[ t ] )
+                {
+                  int argb = _tiles[ t ][ xt + yt * _tilesize ];
+                  r += ( ( argb & 0xff0000 ) >> 16 ) * weights[ t ] * normalization;
+                  g += ( ( argb & 0xff00 ) >> 8 ) * weights[ t ] * normalization;
+                  b += ( argb & 0xff ) * weights[ t ] * normalization;
+                }
+              bitmapData[ idi ] = unchecked(( int )0xff000000 | ( ( int )r << 16 ) | ( ( int )g << 8 ) | ( int )b);
+            }
           }
         }
       }
