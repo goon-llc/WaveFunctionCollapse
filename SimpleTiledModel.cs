@@ -219,8 +219,12 @@ class SimpleTiledModel : Model
         {
           int[] tile = _tiles[ observed[ x + y * mx ] ];
           for ( int dy = 0; dy < _tilesize; dy++ )
-          for ( int dx = 0; dx < _tilesize; dx++ )
-            bitmapData[ x * _tilesize + dx + ( y * _tilesize + dy ) * mx * _tilesize ] = tile[ dx + dy * _tilesize ];
+          {
+            for ( int dx = 0; dx < _tilesize; dx++ )
+            {
+              bitmapData[ x * _tilesize + dx + ( y * _tilesize + dy ) * mx * _tilesize ] = tile[ dx + dy * _tilesize ];
+            }
+          }
         }
       }
     }
