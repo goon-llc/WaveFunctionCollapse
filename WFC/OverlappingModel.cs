@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace WFC;
 
-class OverlappingModel : Model
+public class OverlappingModel : Model
 {
   readonly List<byte[]> _patterns;
   readonly List<int> _colors;

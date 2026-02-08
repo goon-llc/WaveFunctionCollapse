@@ -34,11 +34,7 @@ static class Helper
     return product;
   }
 
-  public static T Get<T>( this XElement xElement, string attribute, T defaultT = default )
-  {
-    XAttribute a = xElement.Attribute( attribute );
-    return a == null ? defaultT : ( T )TypeDescriptor.GetConverter( typeof(T) ).ConvertFromInvariantString( a.Value );
-  }
+
 
   public static IEnumerable<XElement> Elements( this XElement xElement, params string[] names ) => xElement.Elements( ).Where( e => names.Any( n => n == e.Name ) );
 }

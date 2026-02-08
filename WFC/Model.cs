@@ -4,7 +4,7 @@ using System;
 
 namespace WFC;
 
-abstract class Model
+public abstract class Model
 {
   protected bool[][] wave;
 
