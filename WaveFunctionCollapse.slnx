@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="WFC/WFC.csproj" />
+  <Project Path="WFCTests/WFCTests.csproj" />
+</Solution>

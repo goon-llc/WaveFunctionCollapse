@@ -6,9 +6,9 @@ using System.Diagnostics;
 
 namespace WaveFunctionCollapse;
 
-static class InvocationExample
+public static class InvocationExample
 {
-  static void Run( )
+  public static void Run( )
   {
     Stopwatch sw = Stopwatch.StartNew( );
     var folder = System.IO.Directory.CreateDirectory( "output" );
