@@ -1,4 +1,4 @@
-﻿using WaveFunctionCollapse;
+﻿using WFC;
 
 namespace WFCTests;
 

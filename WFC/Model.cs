@@ -2,7 +2,7 @@
 
 using System;
 
-namespace WaveFunctionCollapse;
+namespace WFC;
 
 abstract class Model
 {

@@ -3,27 +3,27 @@
 using System;
 using System.Collections.Generic;
 
-namespace WaveFunctionCollapse;
+namespace WFC;
 
 class OverlappingModel : Model
 {
-  List<byte[]> patterns;
-  List<int> colors;
+  readonly List<byte[]> _patterns;
+  readonly List<int> _colors;
 
   public OverlappingModel( string name, int n, int width, int height, bool periodicInput, bool periodic, int symmetry, bool ground, Heuristic heuristic )
     : base( width, height, n, periodic, heuristic )
   {
     var (bitmap, sx, sy) = BitmapHelper.LoadBitmap( $"samples/{name}.png" );
     byte[] sample = new byte[ bitmap.Length ];
-    colors = new List<int>( );
+    _colors = new List<int>( );
     for ( int i = 0; i < sample.Length; i++ )
     {
       int color = bitmap[ i ];
       int k = 0;
-      for ( ; k < colors.Count; k++ )
-        if ( colors[ k ] == color )
+      for ( ; k < _colors.Count; k++ )
+        if ( _colors[ k ] == color )
           break;
-      if ( k == colors.Count ) colors.Add( color );
+      if ( k == _colors.Count ) _colors.Add( color );
       sample[ i ] = ( byte )k;
     }
 
@@ -50,11 +50,11 @@ class OverlappingModel : Model
       return result;
     }
 
-    patterns = new( );
+    _patterns = new( );
     Dictionary<long, int> patternIndices = new( );
     List<double> weightList = new( );
 
-    int C = colors.Count;
+    int C = _colors.Count;
     int xmax = periodicInput ? sx : sx - n + 1;
     int ymax = periodicInput ? sy : sy - n + 1;
     for ( int y = 0; y < ymax; y++ )
@@ -81,7 +81,7 @@ class OverlappingModel : Model
           {
             patternIndices.Add( h, weightList.Count );
             weightList.Add( 1.0 );
-            patterns.Add( p );
+            _patterns.Add( p );
           }
         }
       }
@@ -91,7 +91,7 @@ class OverlappingModel : Model
     T = weights.Length;
     this.ground = ground;
 
-    static bool agrees( byte[] p1, byte[] p2, int dx, int dy, int n )
+    static bool Agrees( byte[] p1, byte[] p2, int dx, int dy, int n )
     {
       int xmin = dx < 0 ? 0 : dx, xmax = dx < 0 ? dx + n : n, ymin = dy < 0 ? 0 : dy, ymax = dy < 0 ? dy + n : n;
       for ( int y = ymin; y < ymax; y++ )
@@ -101,8 +101,6 @@ class OverlappingModel : Model
       return true;
     }
 
-    ;
-
     propagator = new int[ 4 ][][];
     for ( int d = 0; d < 4; d++ )
     {
@@ -111,7 +109,7 @@ class OverlappingModel : Model
       {
         List<int> list = new( );
         for ( int t2 = 0; t2 < T; t2++ )
-          if ( agrees( patterns[ t ], patterns[ t2 ], Dx[ d ], Dy[ d ], n ) )
+          if ( Agrees( _patterns[ t ], _patterns[ t2 ], Dx[ d ], Dy[ d ], n ) )
             list.Add( t2 );
         propagator[ d ][ t ] = new int[ list.Count ];
         for ( int c = 0; c < list.Count; c++ ) propagator[ d ][ t ][ c ] = list[ c ];
@@ -130,7 +128,7 @@ class OverlappingModel : Model
         for ( int x = 0; x < mx; x++ )
         {
           int dx = x < mx - n + 1 ? 0 : n - 1;
-          bitmap[ x + y * mx ] = colors[ patterns[ observed[ x - dx + ( y - dy ) * mx ] ][ dx + dy * n ] ];
+          bitmap[ x + y * mx ] = _colors[ _patterns[ observed[ x - dx + ( y - dy ) * mx ] ][ dx + dy * n ] ];
         }
       }
     }
@@ -155,7 +153,7 @@ class OverlappingModel : Model
             if ( wave[ s ][ t ] )
             {
               contributors++;
-              int argb = colors[ patterns[ t ][ dx + dy * n ] ];
+              int argb = _colors[ _patterns[ t ][ dx + dy * n ] ];
               r += ( argb & 0xff0000 ) >> 16;
               g += ( argb & 0xff00 ) >> 8;
               b += argb & 0xff;

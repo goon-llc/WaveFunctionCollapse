@@ -1,14 +1,14 @@
 ﻿// Copyright (C) 2016 Maxim Gumin, The MIT License (MIT)
 
-using System.Linq;
-using System.Xml.Linq;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Xml.Linq;
 
-namespace WaveFunctionCollapse;
+namespace WFC;
 
 static class Helper
 {

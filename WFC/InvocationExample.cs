@@ -1,10 +1,10 @@
 ﻿// Copyright (C) 2016 Maxim Gumin, The MIT License (MIT)
 
 using System;
-using System.Xml.Linq;
 using System.Diagnostics;
+using System.Xml.Linq;
 
-namespace WaveFunctionCollapse;
+namespace WFC;
 
 public static class InvocationExample
 {
@@ -15,9 +15,9 @@ public static class InvocationExample
     foreach ( var file in folder.GetFiles( ) ) file.Delete( );
 
     Random random = new( );
-    XDocument xdoc = XDocument.Load( "samples.xml" );
+    XDocument xDocument = XDocument.Load( "samples.xml" );
 
-    foreach ( XElement xElement in xdoc.Root.Elements( "overlapping" ) )
+    foreach ( XElement xElement in xDocument.Root.Elements( "overlapping" ) )
     {
       Model model;
       string name = xElement.Get<string>( "name" );
