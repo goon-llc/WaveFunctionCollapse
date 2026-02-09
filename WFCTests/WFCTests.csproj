@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="samples\*">
+        <None Update="samples\*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Include="params.xml">
