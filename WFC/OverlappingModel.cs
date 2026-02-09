@@ -148,7 +148,7 @@ public class OverlappingModel : Model
           if ( sy < 0 ) sy += my;
 
           int s = sx + sy * mx;
-          if ( !periodic && ( sx + n > mx || sy + n > my || sx < 0 || sy < 0 ) ) continue;
+          if ( !periodicOutput && ( sx + n > mx || sy + n > my || sx < 0 || sy < 0 ) ) continue;
           for ( int t = 0; t < T; t++ )
             if ( wave[ s ][ t ] )
             {

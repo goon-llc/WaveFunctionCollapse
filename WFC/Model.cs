@@ -19,7 +19,7 @@ public abstract class Model
   readonly protected int my;
   readonly protected int n;
   protected int T; // todo sort out better name
-  readonly protected bool periodic;
+  readonly protected bool periodicOutput;
   protected bool ground;
 
   protected double[] weights;
@@ -34,12 +34,12 @@ public abstract class Model
   public enum Heuristic { Entropy, MRV, Scanline };
   private readonly Heuristic _heuristic;
 
-  protected Model( int width, int height, int N, bool periodic, Heuristic heuristic )
+  protected Model( int width, int height, int N, bool periodicOutput, Heuristic heuristic )
   {
     mx = width;
     my = height;
     this.n = N;
-    this.periodic = periodic;
+    this.periodicOutput = periodicOutput;
     this._heuristic = heuristic;
   }
 
@@ -116,7 +116,7 @@ public abstract class Model
     {
       for ( int i = _observedSoFar; i < wave.Length; i++ )
       {
-        if ( !periodic && ( i % mx + n > mx || i / mx + n > my ) ) continue;
+        if ( !periodicOutput && ( i % mx + n > mx || i / mx + n > my ) ) continue;
         if ( sumsOfOnes[ i ] > 1 )
         {
           _observedSoFar = i + 1;
@@ -130,7 +130,7 @@ public abstract class Model
     int argmin = -1;
     for ( int i = 0; i < wave.Length; i++ )
     {
-      if ( !periodic && ( i % mx + n > mx || i / mx + n > my ) ) continue;
+      if ( !periodicOutput && ( i % mx + n > mx || i / mx + n > my ) ) continue;
       int remainingValues = sumsOfOnes[ i ];
       double entropy = _heuristic == Heuristic.Entropy ? _entropies[ i ] : remainingValues;
       if ( remainingValues > 1 && entropy <= min )
@@ -173,7 +173,7 @@ public abstract class Model
       {
         int x2 = x1 + Dx[ d ];
         int y2 = y1 + Dy[ d ];
-        if ( !periodic && ( x2 < 0 || y2 < 0 || x2 + n > mx || y2 + n > my ) ) continue;
+        if ( !periodicOutput && ( x2 < 0 || y2 < 0 || x2 + n > mx || y2 + n > my ) ) continue;
 
         if ( x2 < 0 ) x2 += mx;
         else if ( x2 >= mx ) x2 -= mx;
