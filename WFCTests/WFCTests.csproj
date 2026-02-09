@@ -21,4 +21,16 @@
         <ProjectReference Include="../WFC/WFC.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="samples\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="params.xml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="params.xml">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
 </Project>

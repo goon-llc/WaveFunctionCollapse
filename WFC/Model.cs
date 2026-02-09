@@ -149,8 +149,11 @@ public abstract class Model
   void Observe( int node, Random random )
   {
     bool[] w = wave[ node ];
-    for ( int t = 0; t < T; t++ ) _distribution[ t ] = w[ t ] ? weights[ t ] : 0.0;
-    int r = _distribution.Random( random.NextDouble( ) );
+    for ( int t = 0; t < T; t++ )
+    {
+      _distribution[ t ] = w[ t ] ? weights[ t ] : 0.0;
+    }
+    int r = WeightedRandom( _distribution, random.NextDouble( ) );
     for ( int t = 0; t < T; t++ )
       if ( w[ t ] != ( t == r ) )
         Ban( node, t );
@@ -239,6 +242,21 @@ public abstract class Model
       }
       Propagate( );
     }
+  }
+  
+  private static int WeightedRandom( double[] weights, double r )
+  {
+    double sum = 0;
+    foreach ( double t in weights ) sum += t;
+    double threshold = r * sum;
+
+    double partialSum = 0;
+    for ( int i = 0; i < weights.Length; i++ )
+    {
+      partialSum += weights[ i ];
+      if ( partialSum >= threshold ) return i;
+    }
+    return 0;
   }
 
   public abstract void Save( string filename );
