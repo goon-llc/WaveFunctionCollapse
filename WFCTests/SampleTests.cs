@@ -5,17 +5,17 @@ using WFC;
 
 namespace WFCTests;
 
-public class RunTests
+public class SampleTests
 {
   [ Fact ]
-  public void RunTest( )
+  public void GenerateSamples( )
   {
     Stopwatch sw = Stopwatch.StartNew( );
     var folder = System.IO.Directory.CreateDirectory( "output" );
     foreach ( var file in folder.GetFiles( ) ) file.Delete( );
 
     Random random = new( );
-    XDocument xDocument = XDocument.Load( "samples.xml" );
+    XDocument xDocument = XDocument.Load( "params.xml" );
 
     foreach ( XElement xElement in xDocument.Root.Elements( "overlapping" ) )
     {

@@ -2,42 +2,9 @@
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Xml.Linq;
 
 namespace WFC;
-
-static class Helper
-{
-  public static int Random( this double[] weights, double r )
-  {
-    double sum = 0;
-    foreach ( double t in weights ) sum += t;
-    double threshold = r * sum;
-
-    double partialSum = 0;
-    for ( int i = 0; i < weights.Length; i++ )
-    {
-      partialSum += weights[ i ];
-      if ( partialSum >= threshold ) return i;
-    }
-    return 0;
-  }
-
-  public static long ToPower( this int a, int n )
-  {
-    long product = 1;
-    for ( int i = 0; i < n; i++ ) product *= a;
-    return product;
-  }
-
-
-
-  public static IEnumerable<XElement> Elements( this XElement xElement, params string[] names ) => xElement.Elements( ).Where( e => names.Any( n => n == e.Name ) );
-}
 
 static class BitmapHelper
 {
