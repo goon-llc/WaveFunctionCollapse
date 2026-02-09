@@ -8,7 +8,7 @@ namespace WFCTests;
 public class SampleTests
 {
   [ Fact ]
-  public void GenerateSamples( )
+  public void Run( )
   {
     Stopwatch sw = Stopwatch.StartNew( );
     var folder = System.IO.Directory.CreateDirectory( "output" );
