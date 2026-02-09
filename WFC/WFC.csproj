@@ -12,13 +12,4 @@
         <PackageReference Include="SixLabors.ImageSharp" Version="2.1.13"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <None Include="samples\*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="samples.xml">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-
 </Project>
