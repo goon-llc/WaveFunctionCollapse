@@ -10,8 +10,8 @@ public class OverlappingModel : Model
   readonly List<byte[]> _patterns;
   readonly List<int> _colors;
 
-  public OverlappingModel( string name, int n, int width, int height, bool periodicInput, bool periodic, int symmetry, bool ground, Heuristic heuristic )
-    : base( width, height, n, periodic, heuristic )
+  public OverlappingModel( string name, int n, int outWidth, int outHeight, bool periodicInput, bool periodicOutput, int symmetry, bool ground, Heuristic heuristic )
+    : base( outWidth, outHeight, n, periodicOutput, heuristic )
   {
     var (bitmap, sx, sy) = BitmapHelper.LoadBitmap( $"samples/{name}.png" );
     byte[] sample = new byte[ bitmap.Length ];
