@@ -8,10 +8,11 @@ namespace WFC;
 
 static class BitmapHelper
 {
-  public static (int[], int, int) LoadBitmap( string filename )
+  public static (int[] bits, int width, int height) LoadBitmap( string filename )
   {
     using var image = Image.Load<Bgra32>( filename );
-    int width = image.Width, height = image.Height;
+    int width = image.Width;
+    int height = image.Height;
     var result = new int[ width * height ];
     image.CopyPixelDataTo( MemoryMarshal.Cast<int, Bgra32>( result ) );
     return ( result, width, height );
