@@ -1,4 +1,9 @@
+# MacOS
 .DS_Store
-Folder.DotSettings.user
+
+# Dotnet
 bin/
 obj/
+
+# Rider
+*.DotSettings.user
