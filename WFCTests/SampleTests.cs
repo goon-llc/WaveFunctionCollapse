@@ -47,7 +47,7 @@ public class SampleTests
           if ( success )
           {
             Console.WriteLine( "DONE" );
-            model.Save( $"output/{name} {seed}.png" );
+            model.SerializeBitmap( $"output/{name} {seed}.png" );
             break;
           }
           Console.WriteLine( "CONTRADICTION" );

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace WFC;
 
@@ -117,7 +118,8 @@ public class OverlappingModel : Model
     }
   }
 
-  public override void Save( string filename )
+  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+  public override (int[] bitmap, int width, int height) GetBitmap( )
   {
     int[] bitmap = new int[ mx * my ];
     if ( observed[ 0 ] >= 0 )
@@ -162,6 +164,12 @@ public class OverlappingModel : Model
         bitmap[ i ] = unchecked(( int )0xff000000 | ( ( r / contributors ) << 16 ) | ( ( g / contributors ) << 8 ) | b / contributors);
       }
     }
-    BitmapHelper.SaveBitmap( bitmap, mx, my, filename );
+    return (bitmap, mx, my);
+  }
+  
+  public override void SerializeBitmap( string filename )
+  {
+    var image = GetBitmap( );
+    BitmapHelper.SaveBitmap( image.bitmap, image.width, image.height, filename );
   }
 }

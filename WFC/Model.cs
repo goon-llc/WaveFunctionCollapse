@@ -258,9 +258,15 @@ public abstract class Model
     }
     return 0;
   }
-
-  public abstract void Save( string filename );
-
+  
+  public virtual void SerializeBitmap( string filename )
+  {
+    var image = GetBitmap( );
+    BitmapHelper.SaveBitmap( image.bitmap, image.width, image.height, filename );
+  }
+  
+  public abstract (int[] bitmap, int width, int height) GetBitmap( );
+  
   protected static int[] Dx = [ -1, 0, 1, 0 ];
   protected static int[] Dy = [ 0, 1, 0, -1 ];
   private readonly static int[] Opposite = [ 2, 3, 0, 1 ];

@@ -49,7 +49,7 @@ public class RawInputTests
       Model.Heuristic.Scanline );
     
     var outputPath = Path.Combine( folder.FullName, $"{layoutName}_scanline.png" );
-    if ( Retry( scanline ) ) scanline.Save( outputPath );
+    if ( Retry( scanline ) ) scanline.SerializeBitmap( outputPath );
     else throw new Exception( $"Failed to generate coherent layout with {layoutName}.png" );
   }
 
@@ -70,7 +70,7 @@ public class RawInputTests
       Model.Heuristic.Entropy );
     
     var outputPath = Path.Combine( folder.FullName, $"{layoutName}_entropy.png" );
-    if ( Retry( scanline ) ) scanline.Save( outputPath );
+    if ( Retry( scanline ) ) scanline.SerializeBitmap( outputPath );
     else throw new Exception( $"Failed to generate coherent layout with {layoutName}.png" );
   }
   
@@ -106,7 +106,7 @@ public class RawInputTests
     {
       Assert.Throws<ArgumentOutOfRangeException>( ( ) =>
       {
-        model.Save( Path.Combine( outDir.FullName, $"{layoutName}_{tries}.png" ) );
+        model.SerializeBitmap( Path.Combine( outDir.FullName, $"{layoutName}_{tries}.png" ) );
       } );
     }
     else
