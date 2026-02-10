@@ -13,15 +13,16 @@ public class RawInputTests
     {
       file.Delete( );
     }
+
     return folder;
   }
-  
+
   [ Fact ]
   public void ArgOutOfRangeCase( )
   {
-    var outDir = MakeTestOutputFolder(nameof(ArgOutOfRangeCase));
-    
-    var layoutName = "mine05";
+    var outDir = MakeTestOutputFolder( nameof(ArgOutOfRangeCase) );
+
+    var layoutName = "mine02";
     Model model = new OverlappingModel(
       name: layoutName,
       n: 3,
@@ -31,7 +32,7 @@ public class RawInputTests
       periodicOutput: false,
       symmetry: 1,
       ground: true,
-      Model.Heuristic.Scanline
+      Model.Heuristic.MRV
     );
 
     int tries = 0;
@@ -41,15 +42,15 @@ public class RawInputTests
     while ( !success && tries < maxTries )
     {
       tries++;
-      success = model.Run( tries+8, -1 );
+      success = model.Run( tries + 8, -1 );
     }
 
     if ( success )
-    { 
-      model.Save( Path.Combine( outDir.FullName, $"{layoutName}_{tries}.png" ) );
-      /*Assert.Throws<ArgumentNullException>( ( ) =>
+    {
+      Assert.Throws<ArgumentOutOfRangeException>( ( ) =>
       {
-      } );*/
+        model.Save( Path.Combine( outDir.FullName, $"{layoutName}_{tries}.png" ) );
+      } );
     }
     else
     {
