@@ -9,11 +9,10 @@ public class OverlappingModel : Model
 {
   readonly List<byte[]> _patterns;
   readonly List<int> _colors;
-
-  public OverlappingModel( string name, int n, int outWidth, int outHeight, bool periodicInput, bool periodicOutput, int symmetry, bool ground, Heuristic heuristic )
+  
+  public OverlappingModel( int[] bitmap, int inWidth, int inHeight, int n, int outWidth, int outHeight, bool periodicInput, bool periodicOutput, int symmetry, bool ground, Heuristic heuristic )
     : base( outWidth, outHeight, n, periodicOutput, heuristic )
   {
-    var (bitmap, sx, sy) = BitmapHelper.LoadBitmap( $"samples/{name}.png" );
     byte[] sample = new byte[ bitmap.Length ];
     _colors = new List<int>( );
     for ( int i = 0; i < sample.Length; i++ )
@@ -55,15 +54,15 @@ public class OverlappingModel : Model
     List<double> weightList = new( );
 
     int C = _colors.Count;
-    int xmax = periodicInput ? sx : sx - n + 1;
-    int ymax = periodicInput ? sy : sy - n + 1;
+    int xmax = periodicInput ? inWidth : inWidth - n + 1;
+    int ymax = periodicInput ? inHeight : inHeight - n + 1;
     for ( int y = 0; y < ymax; y++ )
     {
       for ( int x = 0; x < xmax; x++ )
       {
         byte[][] ps = new byte[ 8 ][];
 
-        ps[ 0 ] = Pattern( ( dx, dy ) => sample[ ( x + dx ) % sx + ( y + dy ) % sy * sx ], n );
+        ps[ 0 ] = Pattern( ( dx, dy ) => sample[ ( x + dx ) % inWidth + ( y + dy ) % inHeight * inWidth ], n );
         ps[ 1 ] = Reflect( ps[ 0 ], n );
         ps[ 2 ] = Rotate( ps[ 0 ], n );
         ps[ 3 ] = Reflect( ps[ 2 ], n );
@@ -163,11 +162,5 @@ public class OverlappingModel : Model
       }
     }
     return (bitmap, mx, my);
-  }
-  
-  public override void SerializeBitmap( string filename )
-  {
-    var image = GetBitmap( );
-    BitmapHelper.SaveBitmap( image.bitmap, image.width, image.height, filename );
   }
 }

@@ -24,8 +24,8 @@ public class SampleTests
       Console.WriteLine( $"< {name}" );
 
       int size = xElement.Get( "size", 48 );
-      int width = xElement.Get( "width", size );
-      int height = xElement.Get( "height", size );
+      int oWidth = xElement.Get( "width", size );
+      int oHeight = xElement.Get( "height", size );
       bool periodic = xElement.Get( "periodic", false );
       string heuristicString = xElement.Get<string>( "heuristic" );
       var heuristic = heuristicString == "Scanline" ? Model.Heuristic.Scanline : ( heuristicString == "MRV" ? Model.Heuristic.MRV : Model.Heuristic.Entropy );
@@ -35,7 +35,14 @@ public class SampleTests
       int symmetry = xElement.Get( "symmetry", 8 );
       bool ground = xElement.Get( "ground", false );
 
-      model = new OverlappingModel( name, n, width, height, periodicInput, periodic, symmetry, ground, heuristic );
+      ( var data, int iWidth, int iHeight ) = BitmapHelper.LoadBitmap( $"samples/{name}.png" );
+      
+      model = new OverlappingModel( 
+        data, iWidth, iHeight, 
+        n, oWidth, oHeight, 
+        periodicInput, periodic, 
+        symmetry, ground, 
+        heuristic );
 
       for ( int i = 0; i < xElement.Get( "screenshots", 2 ); i++ )
       {
@@ -47,8 +54,8 @@ public class SampleTests
           if ( success )
           {
             Console.WriteLine( "DONE" );
-            model.SerializeBitmap( $"output/{name} {seed}.png" );
-            break;
+            (var map, int w, int h) = model.GetBitmap();
+            BitmapHelper.SaveBitmap( map, w, h, $"samples/{name}" );
           }
           Console.WriteLine( "CONTRADICTION" );
         }

@@ -4,9 +4,9 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Runtime.InteropServices;
 
-namespace WFC;
+namespace WFCTests;
 
-static class BitmapHelper
+public static class BitmapHelper
 {
   public static (int[] bits, int width, int height) LoadBitmap( string filename )
   {

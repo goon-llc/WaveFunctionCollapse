@@ -259,12 +259,6 @@ public abstract class Model
     return 0;
   }
   
-  public virtual void SerializeBitmap( string filename )
-  {
-    var image = GetBitmap( );
-    BitmapHelper.SaveBitmap( image.bitmap, image.width, image.height, filename );
-  }
-  
   public abstract (int[] bitmap, int width, int height) GetBitmap( );
   
   protected static int[] Dx = [ -1, 0, 1, 0 ];
