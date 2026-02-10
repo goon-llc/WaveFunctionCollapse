@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace WFC;
 
@@ -117,8 +116,7 @@ public class OverlappingModel : Model
       }
     }
   }
-
-  [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+  
   public override (int[] bitmap, int width, int height) GetBitmap( )
   {
     int[] bitmap = new int[ mx * my ];
