@@ -1,4 +1,4 @@
 dotnet restore
 dotnet build --configuration Release --no-restore
-dotnet test --no-build --verbosity normal
+dotnet run --project ./WFCTests/WFCTests.csproj
 dotnet pack --no-build --configuration Release
