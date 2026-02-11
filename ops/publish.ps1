@@ -1,5 +1,6 @@
 param (
-  [string]$apikey
+  [string]$apikey,
+  [string]$repo
 )
 
 $version = Get-Content .\WFC\WFC.csproj | Select-String "^\s*<Version>(.*)<\/Version>\s*$" | ForEach-Object {
@@ -10,7 +11,7 @@ $semverPattern = "^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d
 
 if ($version -match $semverPattern)
 {
-  dotnet nuget push "./WFC/bin/Release/WFC.$version.nupkg" --source "https://nuget.pkg.github.com/goon-llc/index.json" --api-key $apikey --skip-duplicate
+  dotnet nuget push "./WFC/bin/Release/Go-On.WaveFunctionCollapse.$version.nupkg" --source $repo --api-key $apikey --skip-duplicate
 }
 else
 {
