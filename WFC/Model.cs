@@ -1,11 +1,38 @@
 ﻿// Copyright (C) 2016 Maxim Gumin, The MIT License (MIT)
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace WFC;
 
+public static class StopWatchExtensions
+{
+  public readonly static Dictionary<string, long> Tallies = new ();
+  
+  public static void Mark( this Stopwatch stopwatch, string region )
+  {
+    Console.WriteLine( $"{region}:  {stopwatch.ElapsedTicks} ticks" );
+    stopwatch.Restart( );
+  }
+
+  public static void Accrue( this Stopwatch stopwatch, string region )
+  {
+    Tallies.TryAdd(region, 0); 
+    Tallies[ region ] += stopwatch.ElapsedTicks;
+    stopwatch.Restart( );
+  }
+
+  public static void GetTally( this Stopwatch stopwatch, string region )
+  {
+    Console.WriteLine( $"{region}: {Tallies[region]}");
+  }
+}
+
 public abstract class Model
 {
+  private Stopwatch watch;
+
   protected bool[][] wave;
 
   protected int[][][] propagator;
@@ -25,7 +52,7 @@ public abstract class Model
   protected double[] weights;
   private double[] _weightLogWeights, _distribution;
 
-  protected int[] sumsOfOnes;
+  protected double[] sumsOfOnes;
   private double _sumOfWeights, _sumOfWeightLogWeights, _startingEntropy;
   protected double[] sumsOfWeights;
   private double[] _sumsOfWeightLogWeights;
@@ -36,6 +63,7 @@ public abstract class Model
 
   protected Model( int width, int height, int N, bool periodicOutput, Heuristic heuristic )
   {
+    watch = new Stopwatch( );
     mx = width;
     my = height;
     this.n = N;
@@ -69,7 +97,7 @@ public abstract class Model
 
     _startingEntropy = Math.Log( _sumOfWeights ) - _sumOfWeightLogWeights / _sumOfWeights;
 
-    sumsOfOnes = new int[ mx * my ];
+    sumsOfOnes = new double[ mx * my ];
     sumsOfWeights = new double[ mx * my ];
     _sumsOfWeightLogWeights = new double[ mx * my ];
     _entropies = new double[ mx * my ];
@@ -80,7 +108,10 @@ public abstract class Model
 
   public bool Run( int seed, int limit )
   {
-    if ( wave == null ) Init( );
+    if ( wave == null )
+    {
+      Init( );
+    }
 
     Clear( );
     Random random = new(seed);
@@ -92,7 +123,11 @@ public abstract class Model
       {
         Observe( node, random );
         bool success = Propagate( );
-        if ( !success ) return false;
+        if ( !success )
+        {
+          PrintTallies();
+          return false;
+        }
       }
       else
       {
@@ -103,13 +138,23 @@ public abstract class Model
             observed[ i ] = t;
             break;
           }
+        PrintTallies();
         return true;
       }
     }
-
+    PrintTallies();
     return true;
   }
 
+  private void PrintTallies( )
+  {
+    foreach ( var key in StopWatchExtensions.Tallies.Keys )
+    {
+      watch.GetTally( key );
+    }
+  }
+
+  
   int NextUnobservedNode( Random random )
   {
     if ( _heuristic == Heuristic.Scanline )
@@ -117,7 +162,7 @@ public abstract class Model
       for ( int i = _observedSoFar; i < wave.Length; i++ )
       {
         if ( !periodicOutput && ( i % mx + n > mx || i / mx + n > my ) ) continue;
-        if ( sumsOfOnes[ i ] > 1 )
+        if ( sumsOfOnes[ i ] > 1d )
         {
           _observedSoFar = i + 1;
           return i;
@@ -130,10 +175,14 @@ public abstract class Model
     int argmin = -1;
     for ( int i = 0; i < wave.Length; i++ )
     {
-      if ( !periodicOutput && ( i % mx + n > mx || i / mx + n > my ) ) continue;
-      int remainingValues = sumsOfOnes[ i ];
-      double entropy = _heuristic == Heuristic.Entropy ? _entropies[ i ] : remainingValues;
-      if ( remainingValues > 1 && entropy <= min )
+      if ( !periodicOutput && ( i % mx + n > mx || i / mx + n > my ) )
+      {
+        continue;
+      }
+      watch.Restart( );
+      double entropy = _heuristic == Heuristic.Entropy ? _entropies[ i ] : sumsOfOnes[ i ];
+      watch.Accrue( "proposed optimization" );
+      if ( entropy > 1d && entropy <= min )
       {
         double noise = 1E-6 * random.NextDouble( );
         if ( entropy + noise < min )
@@ -195,7 +244,7 @@ public abstract class Model
       }
     }
 
-    return sumsOfOnes[ 0 ] > 0;
+    return sumsOfOnes[ 0 ] > 0d;
   }
 
   void Ban( int i, int t )
@@ -207,7 +256,7 @@ public abstract class Model
     _stack[ _stackSize ] = ( i, t );
     _stackSize++;
 
-    sumsOfOnes[ i ] -= 1;
+    sumsOfOnes[ i ] -= 1d;
     sumsOfWeights[ i ] -= weights[ t ];
     _sumsOfWeightLogWeights[ i ] -= _weightLogWeights[ t ];
 
@@ -243,7 +292,7 @@ public abstract class Model
       Propagate( );
     }
   }
-  
+
   private static int WeightedRandom( double[] weights, double r )
   {
     double sum = 0;
@@ -258,9 +307,9 @@ public abstract class Model
     }
     return 0;
   }
-  
+
   public abstract (int[] bitmap, int width, int height) GetBitmap( );
-  
+
   protected static int[] Dx = [ -1, 0, 1, 0 ];
   protected static int[] Dy = [ 0, 1, 0, -1 ];
   private readonly static int[] Opposite = [ 2, 3, 0, 1 ];
