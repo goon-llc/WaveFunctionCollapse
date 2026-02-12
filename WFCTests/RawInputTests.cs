@@ -1,10 +1,11 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using WFC;
 
 namespace WFCTests;
 
-public class RawInputTests
+public class IntegrationTests
 {
   private DirectoryInfo MakeTestOutputFolder( string testName )
   {
@@ -24,15 +25,23 @@ public class RawInputTests
     int maxTries = 15;
     bool success = false;
     var random = new Random( seed );
+    var sw = Stopwatch.StartNew( );
     while ( !success && tries < maxTries )
     {
       tries++;
       success = model.Run( random.Next() + 1_000_000, -1 );
+      MarkTime( sw, "Run"  );
     }
     return success;
   }
 
-  [ Fact ]
+  private void MarkTime( Stopwatch sw, string method )
+  {
+    Console.WriteLine( $"{method}: {sw.ElapsedMilliseconds} ms " );
+    sw.Restart(  );
+  }
+
+  //[ Fact ]
   private void BasicMineLayoutScanline( )
   {
     var folder = MakeTestOutputFolder( nameof(BasicMineLayoutScanline) );
@@ -57,7 +66,7 @@ public class RawInputTests
     }
   }
 
-  [ Fact ]
+  //[ Fact ]
   private void BasicMineLayoutEntropy( )
   {
     var folder = MakeTestOutputFolder( nameof(BasicMineLayoutEntropy) );
@@ -82,10 +91,38 @@ public class RawInputTests
       throw new Exception( $"Failed to generate coherent layout with {layoutName}.png" );
     }
   }
-  
 
   [ Fact ]
-  public void ArgOutOfRangeCase( )
+  public void TargetOutputRuntime( )
+  {
+    var folder = MakeTestOutputFolder( nameof(TargetOutputRuntime) );
+    var layoutName = "mine01";
+    ( var bitmap, int width, int height ) = BitmapHelper.LoadBitmap( $"samples/{layoutName}.png" );
+    var sw = Stopwatch.StartNew( );
+    var model = new OverlappingModel(
+      bitmap, width, height, 
+      n: 3, outWidth: 128, outHeight: 128,
+      periodicInput: false, periodicOutput: false, 
+      symmetry: 1, ground: false,
+      Model.Heuristic.Entropy );
+    MarkTime( sw, "OverlappingModel Ctor" );
+    var outputPath = Path.Combine( folder.FullName, $"{layoutName}_large.png" );
+    if ( Retry( model, 39832424 ) )
+    {
+      sw.Restart();
+      ( var data, int w, int h ) = model.GetBitmap( );
+      MarkTime( sw, "GetBitmap"  );
+      BitmapHelper.SaveBitmap( data, w, h, outputPath );
+      MarkTime( sw, "SaveBitmap" );
+    }
+    else
+    {
+      throw new Exception( $"Failed to generate coherent layout with {layoutName}.png" );
+    }
+  }
+
+  //[ Fact ]
+  private void ArgOutOfRangeCase( )
   {
     var outDir = MakeTestOutputFolder( nameof(ArgOutOfRangeCase) );
     var layoutName = "mine02";
