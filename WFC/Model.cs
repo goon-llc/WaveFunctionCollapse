@@ -1,36 +1,31 @@
 ﻿// Copyright (C) 2016 Maxim Gumin, The MIT License (MIT)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace WFC;
 
-public static class StopWatchExtensions
-{
-  public readonly static Dictionary<string, long> Tallies = new ();
-  
-  public static void Mark( this Stopwatch stopwatch, string region )
-  {
-    Console.WriteLine( $"{region}:  {stopwatch.ElapsedTicks} ticks" );
-    stopwatch.Restart( );
-  }
-
-  public static void Accrue( this Stopwatch stopwatch, string region )
-  {
-    Tallies.TryAdd(region, 0); 
-    Tallies[ region ] += stopwatch.ElapsedTicks;
-    stopwatch.Restart( );
-  }
-
-  public static void GetTally( this Stopwatch stopwatch, string region )
-  {
-    Console.WriteLine( $"{region}: {Tallies[region]}");
-  }
-}
-
 public abstract class Model
 {
+  protected static readonly int[] Dx = [ -1, 0, 1, 0 ];
+  protected static readonly int[] Dy = [ 0, 1, 0, -1 ];
+  private static readonly int[] Opposite = [ 2, 3, 0, 1 ];
+  
+  private static int WeightedRandom( double[] weights, double r )
+  {
+    double sum = 0;
+    foreach ( double t in weights ) sum += t;
+    double threshold = r * sum;
+
+    double partialSum = 0;
+    for ( int i = 0; i < weights.Length; i++ )
+    {
+      partialSum += weights[ i ];
+      if ( partialSum >= threshold ) return i;
+    }
+    return 0;
+  }
+  
   private Stopwatch watch;
 
   protected bool[][] wave;
@@ -42,11 +37,11 @@ public abstract class Model
   private (int, int)[] _stack;
   private int _stackSize, _observedSoFar;
 
-  readonly protected int mx;
-  readonly protected int my;
-  readonly protected int n;
+  protected readonly int mx;
+  protected readonly int my;
+  protected readonly int n;
   protected int T; // todo sort out better name
-  readonly protected bool periodicOutput;
+  protected readonly bool periodicOutput;
   protected bool ground;
 
   protected double[] weights;
@@ -66,9 +61,9 @@ public abstract class Model
     watch = new Stopwatch( );
     mx = width;
     my = height;
-    this.n = N;
+    n = N;
     this.periodicOutput = periodicOutput;
-    this._heuristic = heuristic;
+    _heuristic = heuristic;
   }
 
   void Init( )
@@ -125,7 +120,7 @@ public abstract class Model
         bool success = Propagate( );
         if ( !success )
         {
-          PrintTallies();
+          //PrintTallies();
           return false;
         }
       }
@@ -138,21 +133,21 @@ public abstract class Model
             observed[ i ] = t;
             break;
           }
-        PrintTallies();
+        //PrintTallies();
         return true;
       }
     }
-    PrintTallies();
+    //PrintTallies();
     return true;
   }
 
-  private void PrintTallies( )
+  /*private void PrintTallies( )
   {
     foreach ( var key in StopWatchExtensions.Tallies.Keys )
     {
       watch.GetTally( key );
     }
-  }
+  }*/
 
   
   int NextUnobservedNode( Random random )
@@ -179,9 +174,9 @@ public abstract class Model
       {
         continue;
       }
-      watch.Restart( );
+      
       double entropy = _heuristic == Heuristic.Entropy ? _entropies[ i ] : sumsOfOnes[ i ];
-      watch.Accrue( "proposed optimization" );
+      
       if ( entropy > 1d && entropy <= min )
       {
         double noise = 1E-6 * random.NextDouble( );
@@ -274,7 +269,7 @@ public abstract class Model
         for ( int d = 0; d < 4; d++ ) _compatible[ i ][ t ][ d ] = propagator[ Opposite[ d ] ][ t ].Length;
       }
 
-      sumsOfOnes[ i ] = weights.Length;
+      sumsOfOnes[ i ] = (double) weights.Length;
       sumsOfWeights[ i ] = _sumOfWeights;
       _sumsOfWeightLogWeights[ i ] = _sumOfWeightLogWeights;
       _entropies[ i ] = _startingEntropy;
@@ -292,25 +287,7 @@ public abstract class Model
       Propagate( );
     }
   }
-
-  private static int WeightedRandom( double[] weights, double r )
-  {
-    double sum = 0;
-    foreach ( double t in weights ) sum += t;
-    double threshold = r * sum;
-
-    double partialSum = 0;
-    for ( int i = 0; i < weights.Length; i++ )
-    {
-      partialSum += weights[ i ];
-      if ( partialSum >= threshold ) return i;
-    }
-    return 0;
-  }
-
+  
   public abstract (int[] bitmap, int width, int height) GetBitmap( );
 
-  protected static int[] Dx = [ -1, 0, 1, 0 ];
-  protected static int[] Dy = [ 0, 1, 0, -1 ];
-  private readonly static int[] Opposite = [ 2, 3, 0, 1 ];
 }
