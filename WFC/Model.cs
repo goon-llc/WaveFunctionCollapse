@@ -14,7 +14,10 @@ public abstract class Model
   private static int WeightedRandom( double[] weights, double r )
   {
     double sum = 0;
-    foreach ( double t in weights ) sum += t;
+    for ( int i = 0; i < weights.Length; i++)
+    {
+      sum += weights[i];
+    }
     double threshold = r * sum;
 
     double partialSum = 0;
