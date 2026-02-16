@@ -7,10 +7,13 @@ namespace WFC;
 
 public class OverlappingModel : Model
 {
+  public int patternCount => _patterns.Count;
+  
   readonly List<byte[]> _patterns;
   readonly List<int> _colors;
-  
-  public OverlappingModel( int[] bitmap, int inWidth, int inHeight, int n, int outWidth, int outHeight, bool periodicInput, bool periodicOutput, int symmetry, bool ground, Heuristic heuristic )
+
+  public OverlappingModel( int[] bitmap, int inWidth, int inHeight, int n, int outWidth, int outHeight,
+    bool periodicInput, bool periodicOutput, int symmetry, bool ground, Heuristic heuristic )
     : base( outWidth, outHeight, n, periodicOutput, heuristic )
   {
     byte[] sample = new byte[ bitmap.Length ];
@@ -24,29 +27,6 @@ public class OverlappingModel : Model
           break;
       if ( k == _colors.Count ) _colors.Add( color );
       sample[ i ] = ( byte )k;
-    }
-
-    static byte[] Pattern( Func<int, int, byte> f, int N )
-    {
-      byte[] result = new byte[ N * N ];
-      for ( int y = 0; y < N; y++ )
-      for ( int x = 0; x < N; x++ )
-        result[ x + y * N ] = f( x, y );
-      return result;
-    }
-
-    static byte[] Rotate( byte[] p, int N ) => Pattern( ( x, y ) => p[ N - 1 - y + x * N ], N );
-    static byte[] Reflect( byte[] p, int N ) => Pattern( ( x, y ) => p[ N - 1 - x + y * N ], N );
-
-    static long Hash( byte[] p, int C )
-    {
-      long result = 0, power = 1;
-      for ( int i = 0; i < p.Length; i++ )
-      {
-        result += p[ p.Length - 1 - i ] * power;
-        power *= C;
-      }
-      return result;
     }
 
     _patterns = new( );
@@ -90,16 +70,6 @@ public class OverlappingModel : Model
     T = weights.Length;
     this.ground = ground;
 
-    static bool Agrees( byte[] p1, byte[] p2, int dx, int dy, int n )
-    {
-      int xmin = dx < 0 ? 0 : dx, xmax = dx < 0 ? dx + n : n, ymin = dy < 0 ? 0 : dy, ymax = dy < 0 ? dy + n : n;
-      for ( int y = ymin; y < ymax; y++ )
-      for ( int x = xmin; x < xmax; x++ )
-        if ( p1[ x + n * y ] != p2[ x - dx + n * ( y - dy ) ] )
-          return false;
-      return true;
-    }
-
     propagator = new int[ 4 ][][];
     for ( int d = 0; d < 4; d++ )
     {
@@ -114,8 +84,49 @@ public class OverlappingModel : Model
         for ( int c = 0; c < list.Count; c++ ) propagator[ d ][ t ][ c ] = list[ c ];
       }
     }
+
+    return;
+
+    static byte[] Pattern( Func<int, int, byte> f, int n )
+    {
+      byte[] result = new byte[ n * n ];
+      for ( int y = 0; y < n; y++ )
+      {
+        for ( int x = 0; x < n; x++ )
+        {
+          result[ x + y * n ] = f( x, y );
+        }
+      }
+
+      return result;
+    }
+
+    static byte[] Rotate( byte[] p, int N ) => Pattern( ( x, y ) => p[ N - 1 - y + x * N ], N );
+    static byte[] Reflect( byte[] p, int N ) => Pattern( ( x, y ) => p[ N - 1 - x + y * N ], N );
+
+    static long Hash( byte[] p, int C )
+    {
+      long result = 0, power = 1;
+      for ( int i = 0; i < p.Length; i++ )
+      {
+        result += p[ p.Length - 1 - i ] * power;
+        power *= C;
+      }
+
+      return result;
+    }
+
+    static bool Agrees( byte[] p1, byte[] p2, int dx, int dy, int n )
+    {
+      int xmin = dx < 0 ? 0 : dx, xmax = dx < 0 ? dx + n : n, ymin = dy < 0 ? 0 : dy, ymax = dy < 0 ? dy + n : n;
+      for ( int y = ymin; y < ymax; y++ )
+      for ( int x = xmin; x < xmax; x++ )
+        if ( p1[ x + n * y ] != p2[ x - dx + n * ( y - dy ) ] )
+          return false;
+      return true;
+    }
   }
-  
+
   public override (int[] bitmap, int width, int height) GetBitmap( )
   {
     int[] bitmap = new int[ mx * my ];
@@ -158,9 +169,12 @@ public class OverlappingModel : Model
               b += argb & 0xff;
             }
         }
-        bitmap[ i ] = unchecked(( int )0xff000000 | ( ( r / contributors ) << 16 ) | ( ( g / contributors ) << 8 ) | b / contributors);
+
+        bitmap[ i ] = unchecked(( int )0xff000000 | ( ( r / contributors ) << 16 ) | ( ( g / contributors ) << 8 ) |
+                                b / contributors);
       }
     }
-    return (bitmap, mx, my);
+
+    return ( bitmap, mx, my );
   }
 }
