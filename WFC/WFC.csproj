@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <PackageId>Go-On.WaveFunctionCollapse</PackageId>
-        <Version>1.1.0</Version>
+        <Version>1.2.0</Version>
         <TargetFramework>net8.0</TargetFramework>
         <LangVersion>12</LangVersion>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
