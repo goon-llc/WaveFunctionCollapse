@@ -12,6 +12,10 @@ public class OverlappingModel : Model
   readonly List<byte[]> _patterns;
   readonly List<int> _colors;
 
+  public OverlappingModel( WFCConfig config ) : this(
+      config.brush, config.inputWidth, config.inputHeight, config.n, config.outputWidth, config.outputHeight,
+      config.periodicInput, config.periodicOutput, config.symmetry, config.ground, config.heuristic ) { }
+  
   public OverlappingModel( int[] bitmap, int inWidth, int inHeight, int n, int outWidth, int outHeight,
     bool periodicInput, bool periodicOutput, int symmetry, bool ground, Heuristic heuristic )
     : base( outWidth, outHeight, n, periodicOutput, heuristic )
