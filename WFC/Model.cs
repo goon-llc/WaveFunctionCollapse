@@ -280,14 +280,35 @@ public abstract class Model
     }
     _observedSoFar = 0;
 
+    for (int y = 0; y < my; y++) for (int x = 0; x < mx; x++)
+    {
+      if (!periodicOutput && (x + n > mx || y + n > my)) continue;
+
+      int i = x + y * mx;
+      for (int t = 0; t < T; t++)
+      {
+        bool noNeighborsRight = (periodicOutput || x < mx - n) && propagator[2][t].Length == 0;
+        bool noNeighborsTop = (periodicOutput || y > 0) && propagator[3][t].Length == 0;
+        bool noNeighborsLeft = (periodicOutput || x > 0) && propagator[0][t].Length == 0;
+        bool noNeighborsBottom = (periodicOutput || y < my - n) && propagator[1][t].Length == 0;
+
+        if (noNeighborsRight || noNeighborsTop || noNeighborsLeft || noNeighborsBottom) Ban(i, t);
+      }
+    }
+    
     if ( ground )
     {
       for ( int x = 0; x < mx; x++ )
       {
-        for ( int t = 0; t < T - 1; t++ ) Ban( x + ( my - 1 ) * mx, t );
-        for ( int y = 0; y < my - 1; y++ ) Ban( x + y * mx, T - 1 );
+        int bottom = x + (my - 1) * mx;
+        for (int t = 0; t < T - 1; t++) if (wave[bottom][t]) Ban(bottom, t);
+        for (int y = 0; y < my - 1; y++)
+        {
+          int i = x + y * mx;
+          if (wave[i][T - 1]) Ban(i, T - 1);
+        }
       }
-      Propagate( );
+      if (_stackSize > 0) Propagate();
     }
   }
   

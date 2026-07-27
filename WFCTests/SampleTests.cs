@@ -7,10 +7,9 @@ namespace WFCTests;
 
 public class SampleTests
 {
-  
   // Disabled to not blow up CI runtimes
   // TODO split each sample into its own test to run in parallel
-  //[ Fact ]
+  [ Fact ]
   public void Run( )
   {
     Stopwatch sw = Stopwatch.StartNew( );

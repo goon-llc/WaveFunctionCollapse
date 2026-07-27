@@ -121,7 +121,7 @@ public class IntegrationTests
     }
   }
 
-  //[ Fact ]
+  [ Fact ]
   private void ArgOutOfRangeCase( )
   {
     var outDir = MakeTestOutputFolder( nameof(ArgOutOfRangeCase) );
@@ -139,13 +139,9 @@ public class IntegrationTests
       Model.Heuristic.Entropy
     );
 
-    var outputPath = Path.Combine( outDir.FullName, $"{layoutName}_scanline.png" );
     if ( Retry( model ) )
-    {
-      Assert.Throws<ArgumentOutOfRangeException>( ( ) =>
-      {
-        model.GetBitmap( );
-      } );
+    { 
+      model.GetBitmap( );
     }
     else
     {
