@@ -27,4 +27,4 @@ jobs:
       run: ./ops/build.ps1
     - name: Push the Package
       shell: pwsh
-      run: ./ops/publish.ps1 ${{ secrets.GITHUB_TOKEN }}
+      run: ./ops/publish.ps1 ${{ secrets.GITHUB_TOKEN }} ${{secrets.PACKAGE_REPO_URL}}

@@ -41,7 +41,7 @@ public class IntegrationTests
     sw.Restart(  );
   }
 
-  //[ Fact ]
+  [ Fact ]
   private void BasicMineLayoutScanline( )
   {
     var folder = MakeTestOutputFolder( nameof(BasicMineLayoutScanline) );
@@ -66,7 +66,7 @@ public class IntegrationTests
     }
   }
 
-  //[ Fact ]
+  [ Fact ]
   private void BasicMineLayoutEntropy( )
   {
     var folder = MakeTestOutputFolder( nameof(BasicMineLayoutEntropy) );
